@@ -3,20 +3,22 @@ package com.smes.tinkerboard_gpio.sensors;
 import com.smes.tinkerboard_gpio.GPIOCollection;
 import com.smes.tinkerboard_gpio.GPIOPin;
 
-public abstract class GPIOCollectionSensor
+public abstract class GPIOCollectionSensor extends Sensor
 {
 	GPIOPin [] gpioPinCollection;
 	GPIOCollection[] collections;
 
-	public GPIOCollectionSensor(int numPins)
+	public GPIOCollectionSensor(String name, int numPins)
 	{
+		super(name);
 		this.gpioPinCollection = new GPIOPin[numPins];
 		this.collections = new GPIOCollection[1];
 		this.collections[0] = new GPIOCollection(gpioPinCollection);
 	}
 
-	public GPIOCollectionSensor(int numPins, int numCollections)
+	public GPIOCollectionSensor(String name, int numPins, int numCollections)
 	{
+		super(name);
 		this.gpioPinCollection = new GPIOPin[numPins];
 		this.collections = new GPIOCollection[numCollections];
 	}

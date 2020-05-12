@@ -11,9 +11,9 @@ import com.smes.tinkerboard_gpio.GPIOPin;
 //	0	F	E	D
 public class KeyPad extends GPIOCollectionSensor
 {
-	public KeyPad(int R1, int R2, int R3, int R4, int C1, int C2, int C3, int C4)
+	public KeyPad(String name, int R1, int R2, int R3, int R4, int C1, int C2, int C3, int C4)
 	{
-		super(8, 2);
+		super(name, 8, 2);
 		this.gpioPinCollection[0] = new GPIOPin(R1);
 		this.gpioPinCollection[1] = new GPIOPin(R2);
 		this.gpioPinCollection[2] = new GPIOPin(R3);
