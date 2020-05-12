@@ -126,6 +126,7 @@ public abstract class ExecuteAsRootBase
 
 				DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
 
+
 				// Execute commands that require root access
 				for (String currCommand : commands)
 				{
@@ -168,9 +169,14 @@ public abstract class ExecuteAsRootBase
 		return retval;
 	}
 
-	public final boolean execute(String command)
+	public final void execute(String command)
 	{
-		boolean retval = false;
+		this.execute(command, false);
+	}
+
+	public final int execute(String command, boolean requiresOutput)
+	{
+		int retval = -1;
 
 		try
 		{
@@ -178,26 +184,33 @@ public abstract class ExecuteAsRootBase
 			Process suProcess = Runtime.getRuntime().exec("su");
 
 			DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
+			DataInputStream osRes = new DataInputStream(suProcess.getInputStream());
 
-			// Execute commands that require root access
+			// Execute command that requires root access
 			os.writeBytes(command + "\n");
 			os.flush();
+
+
+			if(requiresOutput && osRes.available() > 0)
+				retval = osRes.readInt();
+
 
 			os.writeBytes("exit\n");
 			os.flush();
 
 			try
 			{
+				if(requiresOutput)
+					return retval;
+
 				int suProcessRetval = suProcess.waitFor();
-				if (255 != suProcessRetval)
+				if (255 == suProcessRetval)
 				{
-					// Root access granted
-					retval = true;
+					retval = -2;
 				}
 				else
 				{
-					// Root access denied
-					retval = false;
+					return -10;
 				}
 			}
 			catch (Exception ex)
@@ -212,6 +225,41 @@ public abstract class ExecuteAsRootBase
 		}
 		catch (Exception ex)
 		{
+		}
+
+		return retval;
+	}
+
+
+	public static String executeWithReturn(String command)
+	{
+		String retval = "Success";
+		Process suProcess;
+
+		try
+		{
+			suProcess = Runtime.getRuntime().exec("su");
+
+			DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
+			DataInputStream osRes = new DataInputStream(suProcess.getInputStream());
+
+			if (null != os && null != osRes)
+			{
+				// Getting the id of the current user to check if this is root
+				os.writeBytes(command + "\n");
+				os.flush();
+
+				retval = osRes.readLine();
+
+				os.writeBytes("exit\n");
+				os.flush();
+			}
+		}
+		catch (Exception e)
+		{
+			// Can't get root !
+			// Probably broken pipe exception on trying to write to output stream (os) after su failed, meaning that the device is not rooted
+			retval = "Root access rejected [" + e.getClass().getName() + "] : " + e.getMessage();
 		}
 
 		return retval;
