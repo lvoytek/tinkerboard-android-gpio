@@ -86,4 +86,10 @@ public class KeyPad extends GPIOCollectionSensor
 	{
 
 	}
+
+	@Override
+	public String getSensorType()
+	{
+		return "KeyPad";
+	}
 }

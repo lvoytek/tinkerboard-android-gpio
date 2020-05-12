@@ -41,4 +41,5 @@ public abstract class GPIOCollectionSensor extends Sensor
 
 	public abstract int getInput();
 	public abstract void setOutput(int output);
+	public abstract String getSensorType();
 }
